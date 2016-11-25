@@ -1,0 +1,3 @@
+name = Module for altering the Site information form.
+description = This module alters the Site Information Form and provides a URL with Json response.
+core = 7.x.

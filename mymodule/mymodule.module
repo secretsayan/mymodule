@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Alters the Site Information form and provides a URL with Json response.
+ */
+
+/**
+ * Hook Form Alter Implementation.
+ */
+function mymodule_form_system_site_information_settings_alter(&$form, &$form_state) {
+
+  $def_value = (!empty(variable_get('siteapikey'))) ? variable_get('siteapikey') : 'No API Key yet';
+  $form['site_information']['siteapikey'] = array(
+    '#type'  => 'textfield',
+    '#title'  => 'Site API Key',
+    '#default_value'  => $def_value,
+  );
+
+  $form['actions']['submit']['#value'] = t("Update Configuration");
+  print_r($form);
+  return system_settings_form($form);
+}
+
+/**
+ * Hook Menu Implementation.
+ */
+function mymodule_menu() {
+
+  $items['page_json/%/%'] = array(
+    'title' => 'Json Response',
+    'page callback' => 'mymodule_json',
+    'page arguments' => array(1, 2),
+     // No access restrictions provided.
+    'access callback' => TRUE,
+  );
+
+  return $items;
+}
+
+/**
+ * Callback Function for Json Representation.
+ */
+function mymodule_json($siteapikey, $nid) {
+
+  // Loading the contents of the node based on nid.
+  $node = node_load($nid);
+
+  // Checking the Siteapikey and the Content Type.
+  if (!empty(variable_get('siteapikey')) && $siteapikey == variable_get('siteapikey') && $node->type == 'page') {
+    echo drupal_json_encode($node);
+  }
+  else {
+    echo "access denied";
+  }
+}
